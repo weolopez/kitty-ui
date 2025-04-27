@@ -1,0 +1,12 @@
+{
+  "tasks": {
+    "run:chat_ui": "deno run chat_ui.ts",
+    "run:demo": "deno run demo.ts",
+    "run:interactive_demo": "deno run interactive_demo.ts",
+    "run:mod": "deno run mod.ts",
+    "run:simple_demo": "deno run simple_demo.ts"
+  },
+  "imports": {
+    "src/": "../src/"
+  }
+}
