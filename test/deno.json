@@ -7,6 +7,7 @@
     "run:simple_demo": "deno run simple_demo.ts"
   },
   "imports": {
-    "src/": "../src/"
+    "@weolopez/kitty-ui": "jsr:@weolopez/kitty-ui@0.1.0",
+    "jsr:@weolopez/kitty-ui@0.1.0/": "jsr:@weolopez/kitty-ui@0.1.0/"
   }
 }

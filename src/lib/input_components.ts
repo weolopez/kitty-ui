@@ -19,6 +19,7 @@ export interface FocusableComponent {
     onFocus(): void;
     onBlur(): void;
     handleKey(key: string): boolean;
+    tabIndex?: number;
 }
 
 // Helper function to find the nearest Scene ancestor
@@ -46,6 +47,7 @@ export class Button extends Group implements FocusableComponent {
     background: Rectangle;
     text: Text;
     isFocused: boolean;
+    tabIndex?: number;
 
     constructor(
         text: string,
@@ -54,10 +56,12 @@ export class Button extends Group implements FocusableComponent {
         color: Color = [100, 100, 200],
         textColor: Color = [255, 255, 255],
         focusColor: Color = [150, 150, 255],
-        onClick: ClickHandler | undefined = undefined
+        onClick: ClickHandler | undefined = undefined,
+        tabIndex?: number
     ) {
         super(position);
         // Mixin initialization is not needed in TypeScript classes with implements
+        this.tabIndex = tabIndex;
 
         this.textStr = text;
         this.color = color;
@@ -144,7 +148,7 @@ export class TextInput extends Group implements FocusableComponent {
     text: Text;
     cursor: Text;
     isFocused: boolean;
-
+    tabIndex?: number;
 
     constructor(
         position: Position = [0, 0],
@@ -154,10 +158,12 @@ export class TextInput extends Group implements FocusableComponent {
         focusColor: Color = [70, 70, 100],
         placeholder: string = "",
         value: string = "",
-        onChange: ChangeHandler | undefined = undefined
+        onChange: ChangeHandler | undefined = undefined,
+        tabIndex?: number
     ) {
         super(position);
         // Mixin initialization is not needed in TypeScript classes with implements
+        this.tabIndex = tabIndex;
 
         this.size = size;
         this.color = color;

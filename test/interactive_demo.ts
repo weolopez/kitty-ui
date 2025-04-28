@@ -1,12 +1,19 @@
 // Interactive Demo of the Ghostty Graphics Library.
 // This script demonstrates the interactive components and keyboard input handling.
 
-import { Node } from "../src/lib/node.ts";
-import { Rectangle, Text, Group } from "../src/lib/components.ts"; // Assuming Image is not used in this simple demo
-import { Scene } from "../src/lib/scene.ts";
-import { Button, TextInput, TabContainer, FocusableComponent } from "../src/lib/input_components.ts";
-import { InputManager } from "../src/lib/input_handler.ts";
-import { KittyUtil } from "../src/lib/kitty.ts"; // Import KittyUtil for terminal reset
+import {
+    Node,
+    Rectangle,
+    Text,
+    Group,
+    Scene,
+    Button,
+    TextInput,
+    TabContainer,
+    InputManager,
+    KittyUtil,
+    FocusableComponent // Import FocusableComponent as a type
+} from "../src/lib/mod.ts";
 
 // Define types for clarity
 type Size = [number, number]; // [width, height]
@@ -26,14 +33,10 @@ function getTerminalSize(): Size {
 }
 
 // Define a type for the content groups in tabs that have focusable components
-interface FocusableGroup extends Group {
-    focusableComponents: FocusableComponent[];
-    currentFocusIndex: number;
-}
+// Removed FocusableGroup interface as focus management is now handled by the framework
 
-
-function createFormTab(): FocusableGroup {
-    const content = new Group() as FocusableGroup; // Cast to FocusableGroup
+function createFormTab(): Group {
+    const content = new Group();
 
     // Form title
     const title = new Text(
@@ -142,16 +145,12 @@ function createFormTab(): FocusableGroup {
     );
     content.addChild(clearButton);
 
-    // Store focusable components for tab navigation
-    content.focusableComponents = [nameInput, emailInput, submitButton, clearButton];
-    content.currentFocusIndex = 0;
-
     return content;
 }
 
 
-function createButtonsTab(): FocusableGroup {
-    const content = new Group() as FocusableGroup; // Cast to FocusableGroup
+function createButtonsTab(): Group {
+    const content = new Group();
 
     // Tab title
     const title = new Text(
@@ -216,16 +215,12 @@ function createButtonsTab(): FocusableGroup {
         buttons.push(button);
     }
 
-    // Store focusable components for tab navigation
-    content.focusableComponents = buttons;
-    content.currentFocusIndex = 0;
-
     return content;
 }
 
 
-function createHelpTab(): FocusableGroup {
-    const content = new Group() as FocusableGroup; // Cast to FocusableGroup
+function createHelpTab(): Group {
+    const content = new Group();
 
     // Tab title
     const title = new Text(
@@ -262,10 +257,6 @@ function createHelpTab(): FocusableGroup {
         );
         content.addChild(descText);
     }
-
-    // No focusable components in this tab
-    content.focusableComponents = [];
-    content.currentFocusIndex = 0;
 
     return content;
 }
@@ -358,50 +349,6 @@ async function main() {
     // Set up input manager
     const inputManager = new InputManager(scene);
 
-    // Set up tab navigation
-    let currentTabContent: FocusableGroup = formTab; // Initialize with the first tab content
-    let currentFocusIndex = 0;
-
-    const handleTabKey = () => {
-        // Get the current tab's focusable components
-        const focusableComponents = currentTabContent.focusableComponents;
-
-        if (!focusableComponents || focusableComponents.length === 0) {
-            return; // No focusable components in this tab
-        }
-
-        // Move to the next focusable component
-        currentFocusIndex = (currentFocusIndex + 1) % focusableComponents.length;
-        scene.setFocus(focusableComponents[currentFocusIndex]);
-        scene.renderScene();
-    };
-
-    const handleTabChange = () => {
-        // Update the current tab content
-        const activeTab = tabContainer.tabs[tabContainer.activeTabIndex];
-        if (activeTab && (activeTab.content as any).focusableComponents !== undefined) {
-             currentTabContent = activeTab.content as FocusableGroup;
-             currentFocusIndex = 0;
-
-             // Focus the first component in the new tab if available
-             if (currentTabContent.focusableComponents && currentTabContent.focusableComponents.length > 0) {
-                 scene.setFocus(currentTabContent.focusableComponents[0]);
-             } else {
-                 scene.setFocus(null); // No focusable components in this tab
-             }
-        } else {
-            // If the new tab content is not a FocusableGroup or has no focusable components
-            currentTabContent = new Group() as FocusableGroup; // Create a dummy FocusableGroup
-            currentTabContent.focusableComponents = [];
-            currentTabContent.currentFocusIndex = 0;
-            currentFocusIndex = 0;
-            scene.setFocus(null); // No focus in this tab
-        }
-
-
-        scene.renderScene();
-    };
-
     // Flag to control the main loop
     let running = true;
 
@@ -410,23 +357,10 @@ async function main() {
     };
 
     // Register keyboard handlers
-    scene.registerKeyboardHandler('tab', handleTabKey);
+    // Tab handling is now in Scene, only need escape
     scene.registerKeyboardHandler('escape', exitApp);
 
-    // Set up tab container to call our handler when tabs change
-    // We need to override the original setActiveTab method
-    const originalSetActiveTab = tabContainer.setActiveTab.bind(tabContainer); // Bind to the instance
-
-    tabContainer.setActiveTab = (index: number) => {
-        originalSetActiveTab(index);
-        handleTabChange();
-    };
-
-
-    // Initial focus
-    if (formTab.focusableComponents && formTab.focusableComponents.length > 0) {
-        scene.setFocus(formTab.focusableComponents[0]);
-    }
+    // Initial focus will be set by the Scene's addChild when the first focusable component is added.
 
     // Render the scene
     scene.renderScene();

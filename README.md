@@ -5,8 +5,7 @@ This directory contains a reimplementation of the Ghostty Graphics project in Ty
 The codebase is structured into three main parts:
 
 - `src/lib`: The UI library framework.
-- `src/app`: The application code that loads a scene graph file and renders the scene.
-- `src/test`: Test files for the UI library and application code.
+code.
 
 ## Getting Started
 

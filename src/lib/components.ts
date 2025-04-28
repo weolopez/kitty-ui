@@ -3,6 +3,7 @@
 
 import { Node } from "./node.ts";
 import { KittyUtil } from "./kitty.ts"; // Assuming KittyUtil is in kitty.ts
+import { FocusableComponent } from "./input_components.ts";
 
 // Define types for clarity
 type Size = [number, number]; // [width, height]
@@ -140,5 +141,35 @@ export class Group extends Node {
 
     render(kittyUtil: KittyUtil): void {
         // Group doesn't render anything itself, it just contains other components
+    }
+
+    // Method to find focusable children recursively
+    override getTabbableChildren(): FocusableComponent[] {
+        let tabbableChildren: FocusableComponent[] = [];
+        for (const child of this.children) {
+            // Check if the child implements FocusableComponent interface by checking for required properties
+            if (
+                'isFocused' in child &&
+                typeof (child as any).onFocus === 'function' &&
+                typeof (child as any).onBlur === 'function' &&
+                typeof (child as any).handleKey === 'function'
+            ) {
+                tabbableChildren.push(child as unknown as FocusableComponent);
+            }
+
+            // If the child is a Group, recursively get its tabbable children
+            if (child instanceof Group) {
+                tabbableChildren = tabbableChildren.concat(child.getTabbableChildren());
+            }
+        }
+
+        // Sort by tabIndex, then by order of addition (implicit in the loop)
+        tabbableChildren.sort((a, b) => {
+            const aIndex = a.tabIndex === undefined ? Infinity : a.tabIndex;
+            const bIndex = b.tabIndex === undefined ? Infinity : b.tabIndex;
+            return aIndex - bIndex;
+        });
+
+        return tabbableChildren;
     }
 }

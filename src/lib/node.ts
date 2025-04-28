@@ -1,6 +1,8 @@
 // Node module for the Ghostty Graphics Library.
 // This module defines the Node class, which is the foundation of the scene graph.
 
+import { FocusableComponent } from "./input_components.ts";
+
 export abstract class Node {
     position: [number, number];
     absolutePosition: [number, number]; // Will be recalculated during updateTransform
@@ -51,6 +53,12 @@ export abstract class Node {
         for (const child of this.children) {
             child.updateTransform(force);
         }
+    }
+
+    // Method to find focusable children recursively
+    getTabbableChildren(): FocusableComponent[] {
+        // Base implementation returns an empty array
+        return [];
     }
 
     abstract render(kittyUtil: any): void; // TODO: Define KittyUtil type
