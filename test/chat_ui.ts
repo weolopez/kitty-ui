@@ -21,7 +21,7 @@ const USER_COLORS: Color[] = [
     [255, 255, 100], // Yellowish
 ];
 
-class ChatDisplay extends Group {
+export class ChatDisplay extends Group {
     size: Size;
     messages: Text[];
     maxMessages: number;
@@ -187,12 +187,14 @@ Deno.addSignalListener("SIGINT", async () => {
 
 
 // Run the main function
-main().catch(async (err) => {
-    console.error("Application error:", err);
-    // Ensure terminal is reset on error
-    const kittyUtil = new KittyUtil();
-    kittyUtil.resetColors();
-    // Show cursor
-    Deno.stdout.writeSync(new TextEncoder().encode("\x1b[?25h"));
-    Deno.exit(1);
-});
+if (import.meta.main) {
+    main().catch(async (err) => {
+        console.error("Application error:", err);
+        // Ensure terminal is reset on error
+        const kittyUtil = new KittyUtil();
+        kittyUtil.resetColors();
+        // Show cursor
+        Deno.stdout.writeSync(new TextEncoder().encode("\x1b[?25h"));
+        Deno.exit(1);
+    });
+}

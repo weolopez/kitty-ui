@@ -209,4 +209,13 @@ export class InputManager {
 
         return false;
     }
+/**
+     * Simulates a key press with a processed key string.
+     * This bypasses the raw terminal input handling and directly
+     * dispatches the key to global handlers and the scene.
+     * @param key The processed key string (e.g., "up", "enter", "a").
+     */
+    simulateKeyPress(key: string): void {
+        this.handleKey(key);
+    }
 }
